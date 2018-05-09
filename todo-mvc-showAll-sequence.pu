@@ -1,0 +1,80 @@
+@startuml
+title Show All
+hide footbox
+
+actor user
+user -> Browser: Open Web Page 
+box "JavaScript" #LightBlue
+participant App <<(C,#ADD1B2)>>
+Browser -> App: Publish Load Event
+participant Template <<(C,#ADD1B2)>>
+participant View <<(C,#ADD1B2)>>
+activate App
+  participant Controller <<(C,#ADD1B2)>>
+  App -> Controller: setView(locationHash)
+  activate Controller
+    Controller -> Controller: _updateFilterState
+    Controller -> Controller: _filter
+    activate Controller
+      Controller -> Controller: _updateCount
+      activate Controller
+        participant Model <<(C,#ADD1B2)>>
+        Controller -> Model: getCount
+        activate Model
+          participant Store <<(C,#ADD1B2)>>
+          Model -> Store: findAll
+          activate Store
+            Store --> Model
+            Model --> Controller
+          deactivate Store
+        deactivate Model
+        Controller -> View: render('updateElementCount')
+        activate View
+          View -> Template: itemCounter
+          activate Template
+            Template --> View:
+          deactivate Template
+          View --> Controller
+          View -> Browser: replace todoCount innerHTML
+        deactivate View
+        Controller -> View: render('setFilter', currentPage)
+        activate View
+          View -> Browser: add CSS Class selected 
+          View --> Controller 
+        deactivate View
+        Controller -> View: render('toggleAll')
+        activate View
+          View -> Browser: update check attribute
+          View --> Controller
+        deactivate View
+        Controller -> View: render('contentBlockVisibility')
+        activate View
+          View -> Browser: update main Section CSS display property
+          View --> Controller
+        deactivate View
+        Controller --> Controller
+      deactivate Controller
+      Controller -> Controller: showAll / showActive / ShowCompleted
+      activate Controller
+        Controller -> Model: read
+        activate Model
+          Model --> Controller
+        deactivate Model
+        Controller -> View: render('showEntries', data)
+        View -> Template: show
+        activate Template
+          Template --> View
+        deactivate Template
+        activate View
+          View -> Browser: replace todo HTML Template
+          View --> Controller
+        deactivate View
+        Controller --> Controller
+      deactivate Controller
+      Controller --> Controller
+    deactivate Controller
+    Controller --> App
+  deactivate Controller
+deactivate App
+
+@enduml

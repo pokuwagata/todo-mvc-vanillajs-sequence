@@ -1,0 +1,42 @@
+@startuml
+title Add Todo
+hide footbox
+
+actor user
+user -> Browser: Input form and press Enter
+box "JavaScript" #LightBlue
+participant View <<(C,#ADD1B2)>>
+Browser -> View: Publish Change Event
+activate View
+participant Controller <<(C,#ADD1B2)>>
+View -> Controller: addItem
+activate Controller
+alt invalid string Case
+  Controller --> View:
+else valid string Case
+  participant Model <<(C,#ADD1B2)>>
+  Controller -> Model: create
+  activate Model
+end
+  View --> Browser
+  participant Store <<(C,#ADD1B2)>>
+  Model -> Store: save
+  activate Store
+  Store --> Model
+  deactivate Store
+  Model --> Controller
+  deactivate Model
+  Controller -> View: render('clearNewTodo')
+  end box
+  View -> Browser: Clear Input Form
+  deactivate View
+  Controller -> Controller: _filter
+  activate Controller
+  Controller -> Controller: _updateCount
+  deactivate Controller
+  Controller --> View
+  activate View
+  View --> Browser
+  deactivate View
+  deactivate Controller
+@enduml
